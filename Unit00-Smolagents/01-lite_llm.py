@@ -354,6 +354,30 @@ usage=Usage(completion_tokens=27, prompt_tokens=167, total_tokens=194,
 completion_tokens_details=None, prompt_tokens_details=None)) 
 
 
+# model="ollama/mistral-small3.1"
+model="ollama/mistral-small3.1"
+
+messages = [{"role": "user", "content": "What's the weather like in Boston today?"}]
+
+response = completion(
+  model=model,
+  messages=messages,
+  tools=tools
+)
+In [5]: print(response)                                                       
+ModelResponse(id='chatcmpl-986f6ef9-a683-4901-b6dd-9694be1fdce5', created=1745870751, 
+model='ollama/mistral-small3.1', object='chat.completion', system_fingerprint=None, 
+choices=[Choices(finish_reason='tool_calls', index=0, 
+message=Message(content=None, 
+role='assistant', 
+tool_calls=[ChatCompletionMessageToolCall(function=Function(
+arguments='{"location": "Boston, MA"}', name='get_current_weather'), 
+id='call_3b8dac68-429d-43d5-a839-2f61cef7a8f6', type='function')], 
+function_call=None, provider_specific_fields=None))], 
+usage=Usage(completion_tokens=21, prompt_tokens=507, total_tokens=528, 
+completion_tokens_details=None, prompt_tokens_details=None)) 
+
+
 #-----------------
 
 
@@ -439,3 +463,10 @@ response = completion(
 print(response.choices[0].message.content)
 # Out[]:                                         
 {"name":"Gemma"}   
+
+
+response = completion(
+    model="ollama_chat/mistral-small3.1", 
+    messages=[{ "content": "respond in 20 words. who are you?","role": "user"}], 
+    response_format={"type": "json_schema", "json_schema": {"schema": {"type": "object", "properties": {"name": {"type": "string"}}}}},
+)
