@@ -67,6 +67,36 @@ model = LiteLLMModel(
 
 agent = CodeAgent(tools=[], model=model, add_base_tools=True)
 
+# This takes a really long time for the 8th number in LapHP (~40 min)
 agent.run(
-    "Could you give me the 118th number in the Fibonacci sequence?",
+    "Could you give me the 8th number in the Fibonacci sequence?",
 )
+╭────────────────────────────────── New run ───────────────────────────────────╮
+│                                                                              │
+│ Could you give me the 8th number in the Fibonacci sequence?                  │
+│                                                                              │
+╰─ LiteLLMModel - ollama_chat/llama3.2 ────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  def fibonacci(n):                                                             
+      fib_sequence = [0, 1]                                                     
+      while len(fib_sequence) < n:                                              
+          fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])              
+      return fib_sequence                                                       
+                                                                                
+  # Generate the first 10 numbers in the Fibonacci sequence                     
+  fib_seq = fibonacci(8)                                                        
+  print("Fibonacci sequence:", fib_seq)                                         
+                                                                                
+  # Extract the 8th number from the sequence                                    
+  eighth_number = fib_seq[7]                                                    
+  final_answer(eighth_number)                                                   
+ ────────────────────────────────────────────────────────────────────────────── 
+Execution logs:
+Fibonacci sequence: [0, 1, 1, 2, 3, 5, 8, 13]
+
+Out - Final answer: 13
+[Step 1: Duration 1762.06 seconds| Input tokens: 2,117 | Output tokens: 134]
+Out[6]: 13
+
+
