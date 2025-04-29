@@ -2,51 +2,6 @@
 # Lap HP Pavilion 14 /dev/sda3 env: nlp (ollama: gemma3:1b, llama3.2, phi4-mini)
 # 2025APR27
 
-# https://huggingface.co/docs/smolagents/v1.14.0/en/reference/models#smolagents.LiteLLMModel
-
-from smolagents import LiteLLMModel
-
-messages = [
-  {"role": "user", "content": [{"type": "text", "text": "Hello, how are you?"}]}
-]
-
-# CHECK THIS: add Provider. google/gemma3-1b is not provided by anybody I think. At least,
-# not by the deafult provider (huggingface/hf-inference - HF Inference API.) 
-model = LiteLLMModel(model_id="google/gemma-3-1b-it", temperature=0.2, max_tokens=10)
-print(model(messages))
-
-'''
-completion(model, messages, timeout, temperature, top_p, n, stream, stream_options, stop, 
-           max_completion_tokens, max_tokens, modalities, prediction, audio, presence_penalty, 
-           frequency_penalty, logit_bias, user, reasoning_effort, response_format, seed, tools, 
-           tool_choice, logprobs, top_logprobs, parallel_tool_calls, deployment_id, extra_headers, 
-           functions, function_call, base_url, api_version, api_key, model_list, thinking, **kwargs)
-'''
-# Out[]:
-BadRequestError: litellm.BadRequestError: LLM Provider NOT provided. Pass in the LLM provider you 
-are trying to call. You passed model=google/gemma-3-1b-it
-Pass model as E.g. For 'Huggingface' inference endpoints pass in 
-`completion(model='huggingface/starcoder',..)` Learn more: https://docs.litellm.ai/docs/providers
-
-# FIXING error by adding full provider name
-model = LiteLLMModel(model_id="huggingface/together/deepseek-ai/DeepSeek-R1", temperature=0.2, 
-max_tokens=10)
-print(model(messages))
-# Out[]:
-ChatMessage(role=<MessageRole.ASSISTANT: 'assistant'>, content='\n\nHi there! I suggest getting', 
-tool_calls=None, raw=ModelResponse(id='ns1xp1B-zqrih-937ddcfd7cfe829e', created=1745919892, 
-model='deepseek-ai/DeepSeek-R1', object='chat.completion', system_fingerprint=None, 
-choices=[Choices(finish_reason='length', index=0, 
-message=Message(content='\n\nHi there! I suggest getting', 
-role='assistant', 
-tool_calls=None, 
-function_call=None, 
-reasoning_content='\n\n', 
-provider_specific_fields={'reasoning_content': '\n\n'}))], 
-usage=Usage(completion_tokens=10, prompt_tokens=12, total_tokens=22, 
-completion_tokens_details=None, prompt_tokens_details=None), prompt=[]))
-
-
 
 # CONSULTING LITELLM doc to use the litellm API with completion:
 https://docs.litellm.ai/docs/providers/huggingface
@@ -62,7 +17,7 @@ PATHP = "/media/clm/" + USB + "/" + \
 load_dotenv(dotenv_path=PATHP + ".env")
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-
+# WARNING: This is NON-FREE; uses credits & money from the Huggingface account.
 response = completion(
     model="huggingface/google/gemma-3-1b-it",
     messages=[
