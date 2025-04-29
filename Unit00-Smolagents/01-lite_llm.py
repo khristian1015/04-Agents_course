@@ -1,5 +1,5 @@
 
-# Lap HP Pavilion 14 /dev/sda3 env: nlp (ollama: gemma3:1b, llama3.2, phi4-mini)
+# Lap HP Pavilion 14 /dev/sda3 env: nlp (ollama: gemma3:1b, llama3.2, phi4-mini, qwen3:4b)
 # 2025APR27
 # PC Optiplex 9020 C:\ nlp1 (ollama: gemma3:12b, gemma3:27b)
 # 2025APR28
@@ -188,7 +188,7 @@ File ~/bin/miniconda3/envs/nlp/lib/python3.11/site-packages/litellm/llms/ollama/
 KeyError: 'name'
 
 
-#-----------------
+#----------------------------------
 
 
 # Example Usage - Tool Calling
@@ -378,7 +378,44 @@ usage=Usage(completion_tokens=21, prompt_tokens=507, total_tokens=528,
 completion_tokens_details=None, prompt_tokens_details=None)) 
 
 
-#-----------------
+from litellm import completion
+model="ollama/qwen3:4b"
+
+messages = [{"role": "user", "content": "What's the weather like in Boston today?"}]
+
+response = completion(
+  model=model,
+  messages=messages,
+  tools=tools
+)
+In [9]: print(response)
+ModelResponse(id='chatcmpl-89fa51e6-20d8-4355-bbab-588b98efa805', created=1745885661, 
+model='ollama/qwen3:4b', object='chat.completion', system_fingerprint=None,
+choices=[Choices(finish_reason='tool_calls', index=0, 
+message=Message(content=None, 
+role='assistant', 
+tool_calls=[ChatCompletionMessageToolCall(function=Function(arguments='{"location": "Boston, MA", "unit": "fahrenheit"}', name='get_current_weather'), id='call_0fd8384d-1a89-4954-b105-4e2a786b299f', type='function')], 
+function_call=None, 
+provider_specific_fields=None))], 
+usage=Usage(completion_tokens=36, prompt_tokens=156, total_tokens=192, 
+completion_tokens_details=None, prompt_tokens_details=None))
+
+In [10]: print(response.choices[0].message.tool_calls)
+[ChatCompletionMessageToolCall(function=Function(arguments='{"location": "Boston, MA", "unit": "fahrenheit"}', name='get_current_weather'), id='call_0fd8384d-1a89-4954-b105-4e2a786b299f', type='function')]
+
+
+messages = [{"role": "user", "content": "What's the weather like in Mexico today?"}]
+
+response = completion(
+  model=model,
+  messages=messages,
+  tools=tools
+)
+In [12]: print(response.choices[0].message.tool_calls)
+[ChatCompletionMessageToolCall(function=Function(arguments='{"location": "Mexico", "unit": "celsius"}', name='get_current_weather'), id='call_4c8883be-a1e7-40a7-ac15-f3f8f22c9d2c', type='function')]
+
+
+#----------------------------------
 
 
 # JSON Schema support
@@ -388,8 +425,7 @@ from litellm import completion
 response = completion(
     model="ollama_chat/llama3.2", 
     messages=[{ "content": "respond in 20 words. who are you?","role": "user"}], 
-    response_format={"type": "json_schema", "json_schema": {"schema": {"type": "object", 
-    "properties": {"name": {"type": "string"}}}}},
+    response_format={"type": "json_schema", "json_schema": {"schema": {"type": "object", "properties": {"name": {"type": "string"}}}}},
 )
 print(response)
 # Out[]:
@@ -430,8 +466,8 @@ print(response)
 ModelResponse(id='chatcmpl-91f04e58-21d0-42f0-bc58-9b92e5321246', created=1745751079, 
 model='ollama_chat/gemma3:1b', object='chat.completion', system_fingerprint=None, 
 choices=[Choices(finish_reason='stop', index=0, 
-message=Message(content='{"name": " Gemma, an open-weights AI assistant created by the Gemma team 
-at Google DeepMind."}', 
+message=Message(content='{"name": " Gemma, an open-weights AI assistant created by the Gemma \
+team at Google DeepMind."}', 
 role='assistant', 
 tool_calls=None, 
 function_call=None, 
@@ -461,12 +497,38 @@ response = completion(
     response_format={"type": "json_schema", "json_schema": {"schema": {"type": "object", "properties": {"name": {"type": "string"}}}}},
 )
 print(response.choices[0].message.content)
-# Out[]:                                         
-{"name":"Gemma"}   
+# Out[]:
+{"name":"Gemma"}
 
-
+model = "ollama_chat/qwen3:4b"
 response = completion(
-    model="ollama_chat/mistral-small3.1", 
+    model=model, 
     messages=[{ "content": "respond in 20 words. who are you?","role": "user"}], 
     response_format={"type": "json_schema", "json_schema": {"schema": {"type": "object", "properties": {"name": {"type": "string"}}}}},
 )
+In [15]: print(response.choices[0].message.content)
+{
+  "name": "Qwen"
+}
+
+# Checking json structure
+model='ollama_chat/gemma3:1b'
+response = completion(
+    model=model, 
+    messages=[{ "content": "respond in 20 words. who are you?","role": "user"}], 
+    response_format={
+        "type": "json_schema", 
+        "json_schema": {
+            "schema": {
+                "type": "object", 
+                "properties": {
+                    "name": {"type": "string"}
+                }
+            }
+        }
+    },
+)
+In [17]: print(response.choices[0].message.content)
+{"name": " Gemma, a large language model created by Google DeepMind."}
+
+
