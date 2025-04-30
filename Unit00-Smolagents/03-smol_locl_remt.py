@@ -1,6 +1,7 @@
+# 2025APR27:
 # Lap HP Pavilion 14 /dev/sda3 env: nlp (ollama: gemma3:1b, llama3.2, phi4-mini)
-# 2025APR27
-
+# 2025APR29:
+# Lap Latitude 7300 C:\ env: nlp (ollama: gemma3:12b, llama3.2)
 
 # CONNECTING REMOTELY TO HUGGING FACE MODELS (NON-FREE)
 # https://huggingface.co/docs/smolagents/v1.14.0/en/reference/models#smolagents.LiteLLMModel
@@ -31,8 +32,9 @@ Pass model as E.g. For 'Huggingface' inference endpoints pass in
 # See file 03-smol_remote.py for usage with litellm: https://docs.litellm.ai/docs/providers
 
 # FIXING error by adding full provider name
-model = LiteLLMModel(model_id="huggingface/together/deepseek-ai/DeepSeek-R1", temperature=0.2, 
-max_tokens=10)
+model = LiteLLMModel(model_id="huggingface/together/deepseek-ai/DeepSeek-R1", 
+    temperature=0.2, 
+    max_tokens=10)
 print(model(messages))
 # Out[]:
 ChatMessage(role=<MessageRole.ASSISTANT: 'assistant'>, content='\n\nHi there! I suggest getting', 
@@ -55,48 +57,33 @@ completion_tokens_details=None, prompt_tokens_details=None), prompt=[]))
 # CONNECTING LOCALLY TO OLLAMA MODELS (FREE)
 https://huggingface.co/docs/smolagents/guided_tour?Pick+a+LLM=Ollama
 
-# !pip install smolagents[litellm]
-from smolagents import CodeAgent, LiteLLMModel
+from smolagents import LiteLLMModel
 
+messages = [
+  {"role": "user", "content": [{"type": "text", "text": "Hello, how are you?"}]}
+]
+
+# WARNING: This is NON-FREE; uses credits & money from the Huggingface account.
 model = LiteLLMModel(
     model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
     api_key="YOUR_API_KEY", # replace with API key if necessary
     num_ctx=8192, # ollama default is 2048 which will fail horribly. 8192 works for easy tasks, more is better. Check https://huggingface.co/spaces/NyxKrage/LLM-Model-VRAM-Calculator to calculate how much VRAM this will need for the selected model.
-)
-
-agent = CodeAgent(tools=[], model=model, add_base_tools=True)
-
-# This takes a really long time for the 8th number in LapHP (~40 min)
-agent.run(
-    "Could you give me the 8th number in the Fibonacci sequence?",
-)
-╭────────────────────────────────── New run ───────────────────────────────────╮
-│                                                                              │
-│ Could you give me the 8th number in the Fibonacci sequence?                  │
-│                                                                              │
-╰─ LiteLLMModel - ollama_chat/llama3.2 ────────────────────────────────────────╯
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  def fibonacci(n):                                                             
-      fib_sequence = [0, 1]                                                     
-      while len(fib_sequence) < n:                                              
-          fib_sequence.append(fib_sequence[-1] + fib_sequence[-2])              
-      return fib_sequence                                                       
-                                                                                
-  # Generate the first 10 numbers in the Fibonacci sequence                     
-  fib_seq = fibonacci(8)                                                        
-  print("Fibonacci sequence:", fib_seq)                                         
-                                                                                
-  # Extract the 8th number from the sequence                                    
-  eighth_number = fib_seq[7]                                                    
-  final_answer(eighth_number)                                                   
- ────────────────────────────────────────────────────────────────────────────── 
-Execution logs:
-Fibonacci sequence: [0, 1, 1, 2, 3, 5, 8, 13]
-
-Out - Final answer: 13
-[Step 1: Duration 1762.06 seconds| Input tokens: 2,117 | Output tokens: 134]
-Out[6]: 13
-
-
+    temperature=0.2, 
+    max_tokens=50)
+print(model(messages))
+#Out [23]: LapLatitude7300
+ChatMessage(role=<MessageRole.ASSISTANT: 'assistant'>, content="I'm just a language model, so I 
+don't have feelings or emotions like humans do. However, I'm functioning properly and ready to 
+assist you with any questions or tasks you may have! How can I help you today?", tool_calls=None, 
+raw=ModelResponse(id='chatcmpl-27a61ef3-d4c3-4035-8254-2d44f3f73f4a', created=1745996573, 
+model='ollama_chat/llama3.2', object='chat.completion', system_fingerprint=None, 
+choices=[Choices(finish_reason='stop', index=0, 
+message=Message(content="I'm just a language model, so I don't have feelings or emotions like 
+humans do. However, I'm functioning properly and ready to assist you with any questions or tasks 
+you may have! How can I help you today?", 
+role='assistant', 
+tool_calls=None, 
+function_call=None, 
+provider_specific_fields=None))], usage=Usage(completion_tokens=47, prompt_tokens=31, 
+total_tokens=78, completion_tokens_details=None, prompt_tokens_details=None)))
