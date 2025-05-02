@@ -63,7 +63,7 @@ messages = [
   {"role": "user", "content": [{"type": "text", "text": "Hello, how are you?"}]}
 ]
 
-# WARNING: This is NON-FREE; uses credits & money from the Huggingface account.
+# This is FREE; runs in your machine
 model = LiteLLMModel(
     model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary

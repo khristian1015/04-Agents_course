@@ -7,9 +7,11 @@
 
 # CONNECTING LOCALLY TO OLLAMA MODELS (FREE)
 https://huggingface.co/docs/smolagents/guided_tour?Pick+a+LLM=Ollama
-
 # !pip install smolagents[litellm]
+
+
 # CodeAgent and ToolCallingAgent
+
 from smolagents import CodeAgent, LiteLLMModel
 
 model = LiteLLMModel(
@@ -21,6 +23,7 @@ model = LiteLLMModel(
 
 agent = CodeAgent(tools=[], model=model, add_base_tools=True)
 
+# Pavilion 14 /dev/sda3
 # This takes a really long time for the 8th number in LapHP (~40 min)
 agent.run(
     "Could you give me the 8th number in the Fibonacci sequence?",
@@ -54,7 +57,8 @@ Out - Final answer: 13
 [Step 1: Duration 1762.06 seconds| Input tokens: 2,117 | Output tokens: 134]
 Out[6]: 13
 
-# Trying with gemma3:12b in Latitude7300/WIN 11 [DID NOT WORK WITH OLLAMA/LITELLM]
+# Latitude7300/WIN 11
+# Trying with gemma3:12b [DID NOT WORK WITH OLLAMA/LITELLM]
 model = LiteLLMModel(
     model_id="ollama_chat/gemma3:12b", # This model is a bit weak for agentic behaviours though
     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
@@ -73,7 +77,8 @@ litellm.APIConnectionError: Ollama_chatException - Server error '500 Internal Se
 url 'http://localhost:11434/api/chat'
 For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
 
-# Repeat llama3.2 example in Latitude7300/WIN 11 
+# Latitude7300/WIN 11 
+# Repeat llama3.2 example 
 model = LiteLLMModel(
     model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
@@ -258,7 +263,8 @@ KeyboardInterrupt                         Traceback (most recent call last)
 
 from smolagents import ToolCallingAgent
 
-# Repeat llama3.2 example in Latitude7300/WIN 11 with ToolCallingAgent
+# Latitude7300/WIN 11
+# Repeat llama3.2 example with ToolCallingAgent
 model = LiteLLMModel(
     model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
@@ -293,6 +299,8 @@ Out[16]: '{"title": "How to Use Transformers for Natural Language Understanding 
 
 
 # Default toolbox
+
+# Latitude7300/WIN 11
 from smolagents import DuckDuckGoSearchTool
 
 search_tool = DuckDuckGoSearchTool()
@@ -310,3 +318,61 @@ On March 14, 2004, he was elected President of Russia for the second term. 2008 
 ...
 
 
+# Customized tools
+
+# Latitude7300/WIN 11
+# Previous test 
+from huggingface_hub import list_models
+task = "text-classification"
+most_downloaded_model = next(iter(list_models(filter=task, sort="downloads", direction=-1)))
+print(most_downloaded_model.id)
+# Out[]:
+distilbert/distilbert-base-uncased-finetuned-sst-2-english
+
+# Option 1. Decorate a function with @tool
+from smolagents import tool
+from huggingface_hub import list_models
+
+@tool
+def model_download_tool(task: str) -> str:
+    """
+    This is a tool that returns the most downloaded model of a given HF model task on the Hugging \
+        Face Hub. It returns the name of the checkpoint.
+
+    Args:
+        task: The task for which to get the download count.
+    """
+    most_downloaded_model = next(iter(list_models(filter=task, sort="downloads", direction=-1)))
+    return most_downloaded_model.id
+
+from smolagents import CodeAgent, LiteLLMModel
+
+model = LiteLLMModel(
+    model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
+    api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
+    api_key="YOUR_API_KEY", # replace with API key if necessary
+    num_ctx=8192, # ollama default is 2048 which will fail horribly. 
+)
+
+agent = CodeAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+# Latitude7300/WIN 11
+agent.run("Can you give me the name of the model that has the most downloads in the \
+    'text-to-video' task on the Hugging Face Hub?")
+# Out[]:
+╭───────────────────────────────────── New run ─────────────────────────────────────╮
+│                                                                                   │
+│ Can you give me the name of the model that has the most downloads in the          │
+│ 'text-to-video' task on the Hugging Face Hub?                                     │
+│                                                                                   │
+╰─ LiteLLMModel - ollama_chat/llama3.2 ─────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ──────────────────────────────────────────────────────────
+  most_downloaded_model = model_download_tool(task="text-to-video")
+  final_answer(most_downloaded_model)
+ ───────────────────────────────────────────────────────────────────────────────────
+Out - Final answer: Lightricks/LTX-Video
+[Step 1: Duration 12.90 seconds| Input tokens: 2,052 | Output tokens: 83]
+Out[9]: 'Lightricks/LTX-Video'
