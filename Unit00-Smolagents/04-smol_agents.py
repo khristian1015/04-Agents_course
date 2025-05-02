@@ -1,7 +1,10 @@
 # 2025APR27:
-# Lap HP Pavilion 14 /dev/sda3 env: nlp (ollama: gemma3:1b, llama3.2, phi4-mini)
+# Pavilion14/Linux /dev/sda3 env: nlp (ollama: gemma3:1b, llama3.2, phi4-mini)
 # 2025APR29:
-# Lap Latitude 7300 C:\ env: nlp (ollama: gemma3:12b, llama3.2)
+# Latitude7300/WIN11 C:\ env: nlp (ollama: gemma3:12b, llama3.2)
+# 2025MAY01:
+# Optiplex9020-1/WIN10 C:\ env: nlp (ollama: gemma3:12b, gemma3:27b, mistral-small3.1, 
+#   Phi4-mini-reasoning)
 
 # Using 'CodeAgent' to run agents locally
 
@@ -67,7 +70,6 @@ model = LiteLLMModel(
 )
 agent = CodeAgent(tools=[], model=model, add_base_tools=True)
 
-# This takes a really long time for the 8th number in LapHP (~40 min)
 agent.run(
     "Could you give me the 5th number in the Fibonacci sequence?",
 )
@@ -376,3 +378,151 @@ agent.run("Can you give me the name of the model that has the most downloads in 
 Out - Final answer: Lightricks/LTX-Video
 [Step 1: Duration 12.90 seconds| Input tokens: 2,052 | Output tokens: 83]
 Out[9]: 'Lightricks/LTX-Video'
+
+
+# Optiplex9020-1/WIN10 (Mistral did not work)
+In [22]: model = LiteLLMModel(
+    ...:     model_id="ollama_chat/mistral-small3.1", # This model is a bit weak for agentic behavi
+       ⋮ ours though
+    ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai co
+       ⋮ mpatible server if necessary
+    ...:     api_key="YOUR_API_KEY", # replace with API key if necessary
+    ...:     num_ctx=8192, # ollama default is 2048 which will fail horribly.
+    ...: )
+
+In [23]:
+    ...: agent = CodeAgent(
+    ...:     model = model,
+    ...:     tools = [model_download_tool]
+    ...: )
+
+In [24]: agent.run("Can you give me the name of the model that has the most downloads in the \
+    ...:     'text-to-video' task on the Hugging Face Hub?")
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Can you give me the name of the model that has the most downloads in the     'text-to-video'     │
+│ task on the Hugging Face Hub?                                                                    │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/mistral-small3.1 ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Give Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new
+LiteLLM.Info: If you need to debug this error, use `litellm._turn_on_debug()'.
+
+Error in generating model output:
+litellm.APIConnectionError: Ollama_chatException - Server error '500 Internal Server Error' for url
+'http://localhost:11434/api/chat'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
+[Step 1: Duration 38.45 seconds]
+
+
+# Optiplex9020-1/WIN10 (Phi4-mini-reasoning ran, but got completely lost)
+In [31]: model = LiteLLMModel(
+    ...:     model_id="ollama_chat/phi4-mini-reasoning", # This model is a bit weak for agentic beh
+       ⋮ aviours though
+    ...:     api_base="http://localhost:11434/api/chat", # replace with 127.0.0.1:11434 or remote o
+       ⋮ pen-ai compatible server if necessary
+    ...:     api_key="YOUR_API_KEY", # replace with API key if necessar
+    ...: )
+
+In [32]:
+    ...: agent = CodeAgent(
+    ...:     model = model,
+    ...:     tools = [model_download_tool]
+    ...: )
+
+In [33]: agent.run("Can you give me the name of the model that has the most downloads in the \
+    ...:     'text-to-video' task on the Hugging Face Hub?")
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Can you give me the name of the model that has the most downloads in the     'text-to-video'     │
+│ task on the Hugging Face Hub?                                                                    │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/phi4-mini-reasoning ─────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Error in code parsing:
+Your code snippet is invalid, because the regex pattern ```(?:py|python)?\s*\n(.*?)\n``` was not
+found in it.
+            Here is your code snippet:
+            <think>
+
+Okay, I need to find out which model with the 'text-to-video' task on hugging face has the most
+downloads. Let me start by thinking about how to approach this.
+
+First, I should recall that huggingface.org is where people upload and download models for various
+tasks in NLP, including text-to-video generation. The 'text-to-video' task might be part of a
+specific model lineup or perhaps several different projects are working on it.
+
+Wait, the user wants the name of the model (so just the model's identifier) that has the highest
+number of downloads specifically for the text-to-video task. So I can't look at all models but only
+those whose main purpose is generating videos from text under this specific task category.
+
+Hmm, how does Hugging Face track downloads? Each time a model is downloaded via the API or the
+website, it increments a counter. Maybe each project that works on different tasks has their own
+download counts for their respective tasks. So models are hosted on the hub, and when someone uses
+the 'run' method with a specific task (like text-to-video), they might be using the model's
+checkpoint associated with that task.
+
+Wait, but how does Hugging Face categorize which checkpoints belong to which task? For example, in
+zero-shot classification, each model has different versions for different tasks. When you run a
+model on a certain task, it uses the corresponding checkpoint. So when someone runs text-to-video,
+they need to have saved their checkpoint under that task's name.
+
+So perhaps models like T5 or GPT variants have been trained on various tasks, including video
+generation from text. The downloads for each task would be separate. Therefore, the model with the
+highest 'text-to-video' downloads is the one whose checkpoints for that specific task are downloaded
+most often by users running that task via the API.
+
+...
+
+Wait, let me try another angle: models for text-to-video generation might use a specific task name
+like "text_to_video" (with underscores). So if there's a project named something like this.
+Alternatively, maybe it's from the Lample team's work:
+
+For example, Xin Wang et al., in their paper on diffusion-based video to image synthesis, but that's
+different.
+
+Alternatively, perhaps there is no widely known model for text-to-video under HF's hub that I'm
+aware of as of my knowledge cutoff (October 2023). But since this question seems like it's a
+hypothetical scenario where I should provide an answer based on existing information up to October
+2023.
+
+Wait, maybe the correct answer here is "t5-large" with checkpoints for different tasks. For example,
+T5 models are often used across various NLP tasks and may have been adapted for video generation as
+well. If someone runs text-to-video using t5-large's checkpoint under that task name in run(), then
+each such use would count towards the downloads.
+
+Alternatively, perhaps "sctt2v" which is a specific model on HF hub. For instance, sctt2v-1b might
+have high download counts for its 'text_to_video' checkpoints as people generate videos from text
+using this model.
+
+...
+
+
+Alternatively, maybe I should state that without access to the data needed (like current download
+counts from HF hub), it's impossible to determine precisely who has what number of downloads; but if
+so then would need more info or a method like above.
+
+But given this as an example question and in code evaluation problem where we can compute
+hypothetical numbers, how might one approach it?
+
+Wait: The original prompt said "You are the math learning platform. You have to be an algebra tutor
+for students from all over the country that want help with their work." So being such a system which
+is not only helping them but also keeping track of data and providing information on other similar
+problems.
+
+For this specific problem:
+
+Given some number X, we need 12X = 3. Then compute new value given initial solution was to multiply
+by six then add three then the process repeats until there where n becomes negative or zero.
+The question is: if you are an algebra tutor and a student using your system wants help with this
+specific problem.
+
+Given that:
+"Algebra on Loop V2"
+Problem 12
+Solve for X in Equation "1.   Find value of given number ."
+
+...
+
+[STOPPED MANUALLY]
