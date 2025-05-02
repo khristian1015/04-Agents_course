@@ -3,7 +3,7 @@
 # 2025APR29:
 # Latitude7300/WIN11 C:\ env: nlp (ollama: gemma3:12b, llama3.2)
 # 2025MAY01:
-# Optiplex9020-1/WIN10 C:\ env: nlp (ollama: gemma3:12b, gemma3:27b, mistral-small3.1, 
+# Optiplex9020-1/WIN10 C:\ env: nlp1 (ollama: gemma3:12b, gemma3:27b, mistral-small3.1, 
 #   Phi4-mini-reasoning)
 # Optiplex7050/Linux /dev/sda3 env: nlp2 (ollama: gemma3:12b, qwen2.5:14b)
 
@@ -18,7 +18,7 @@ https://huggingface.co/docs/smolagents/guided_tour?Pick+a+LLM=Ollama
 
 from smolagents import CodeAgent, LiteLLMModel
 
-# Pavilion14/Linux /dev/sda3
+# Pavilion14/Linux /dev/sda3 [Perfect answer (took really long though)]
 model = LiteLLMModel(
     model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
@@ -64,29 +64,8 @@ Out[6]: 13
 
 
 
-# Latitude7300/WIN11
-# Trying with gemma3:12b [DID NOT WORK WITH OLLAMA/LITELLM in Windows]
-model = LiteLLMModel(
-    model_id="ollama_chat/gemma3:12b", # This model is a bit weak for agentic behaviours though
-    api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
-    api_key="YOUR_API_KEY", # replace with API key if necessary
-    num_ctx=8192, # ollama default is 2048 which will fail horribly. 8192 works for easy tasks, more is better. Check https://huggingface.co/spaces/NyxKrage/LLM-Model-VRAM-Calculator to calculate how much VRAM this will need for the selected model.
-)
-agent = CodeAgent(tools=[], model=model, add_base_tools=True)
-
-agent.run(
-    "Could you give me the 5th number in the Fibonacci sequence?",
-)
-# Out[]:
-AgentGenerationError: Error in generating model output:
-litellm.APIConnectionError: Ollama_chatException - Server error '500 Internal Server Error' for 
-url 'http://localhost:11434/api/chat'
-For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
-
-
-
 # Latitude7300/WIN11 
-# Repeat llama3.2 example
+# Repeat llama3.2 example [INCORRECT, infinite loop, inconsistent answers between loops]
 model = LiteLLMModel(
     model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
@@ -267,104 +246,6 @@ Out: (3, 5)
 [Step 11: Duration 52.57 seconds| Input tokens: 38,211 | Output tokens: 2,031]
 ---------------------------------------------------------------------------
 KeyboardInterrupt                         Traceback (most recent call last)
-
-
-
-# Optiplex7050/Linux
-# 2025MAY01
-
-In [5]: 
-   ...: # Trying with gemma3:12b [Did not run: need to change parameters]
-   ...: model = LiteLLMModel(
-   ...:     model_id="ollama_chat/gemma3:12b", # This model is a bit weak for ag
-      ⋮ entic behaviours though
-   ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or
-      ⋮  remote open-ai compatible server if necessary
-   ...:     api_key="YOUR_API_KEY", # replace with API key if necessary
-   ...:     num_ctx=8192, # ollama default is 2048 which will fail horribly. 819
-      ⋮ 2 works for easy tasks, more is better. Check https://huggingface.co/spa
-      ⋮ ces/NyxKrage/LLM-Model-VRAM-Calculator to calculate how much VRAM this w
-      ⋮ ill need for the selected model.
-   ...: )
-Python-dotenv could not parse statement starting at line 3
-Python-dotenv could not parse statement starting at line 3
-
-In [6]: 
-   ...: # Trying with gemma3:12b [WORKED OK WITH OLLAMA/LITELLM in Linux; changed params]
-   # RAM = 32 GB (max RAM occupied = 64%)
-   ...: model = LiteLLMModel(
-   ...:     model_id="ollama_chat/gemma3:12b", # This model is a bit weak for ag
-      ⋮ entic behaviours though
-   ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or
-      ⋮  remote open-ai compatible server if necessary
-   ...: )
-
-In [7]: agent = CodeAgent(tools=[], model=model, add_base_tools=True)
-   ...: 
-
-In [8]: agent.run(
-   ...:     "Could you give me the 5th number in the Fibonacci sequence?",
-   ...: )
-╭────────────────────────────────── New run ───────────────────────────────────╮
-│                                                                              │
-│ Could you give me the 5th number in the Fibonacci sequence?                  │
-│                                                                              │
-╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────╯
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Error in code parsing:
-Your code snippet is invalid, because the regex pattern 
-```(?:py|python)?\s*\n(.*?)\n``` was not found in it.
-            Here is your code snippet:
-            The Fibonacci sequence starts with 0, 1, and each subsequent number 
-is the sum of the two preceding ones.
-
-So the sequence goes:
-
-1.  0
-2.  1
-3.  1 (0+1)
-4.  2 (1+1)
-5.  **3** (1+2)
-
-Therefore, the 5th number in the Fibonacci sequence is **3**.
-
-            Make sure to include code with the correct pattern, for instance:
-            Thoughts: Your thoughts
-            Code:
-            ```py
-            # Your python code here
-            ```<end_code>
-Make sure to provide correct code blobs.
-[Step 1: Duration 43.95 seconds| Input tokens: 27 | Output tokens: 90]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  def fibonacci(n):                                                             
-      """                                                                       
-      Calculates the nth Fibonacci number.                                      
-                                                                                
-      Args:                                                                     
-          n: The index of the Fibonacci number to calculate (starting from 0).  
-                                                                                
-      Returns:                                                                  
-          The nth Fibonacci number.                                             
-      """                                                                       
-      if n <= 0:                                                                
-          return 0                                                              
-      elif n == 1:                                                              
-          return 1                                                              
-      else:                                                                     
-          a = 0                                                                 
-          b = 1                                                                 
-          for _ in range(2, n + 1):                                             
-              a, b = b, a + b                                                   
-          return b                                                              
-                                                                                
-  fifth_fibonacci = fibonacci(5)                                                
-  final_answer(fifth_fibonacci)                                                 
- ────────────────────────────────────────────────────────────────────────────── 
-Out - Final answer: 5
-[Step 2: Duration 286.37 seconds| Input tokens: 2,075 | Output tokens: 312]
-Out[8]: 5
 
 
 
@@ -816,12 +697,11 @@ Out: None
 
 
 
-# Running same model, but changing parameters (omitting num_ctx)
+# Running same model llama3.2, but changing parameters (No num_ctx. Got correct, but shaky answer)
 # Optiplex7050/Linux
 # 2025MAY01
 # Trying with llama3.2 [WORKED OK WITH OLLAMA/LITELLM in Linux]
 # RAM = 32 GB (max RAM occupied = 18%)
-
 from smolagents import CodeAgent, LiteLLMModel
 
 model = LiteLLMModel(
@@ -922,6 +802,224 @@ Out[7]: 'The 5th number in the Fibonacci sequence is indeed 3.'
 
 
 
+
+# Latitude7300/WIN11
+# 2025MAY01
+# Trying with gemma3:12b [DID NOT WORK WITH OLLAMA/LITELLM in Windows: 500 Error]
+model = LiteLLMModel(
+    model_id="ollama_chat/gemma3:12b", # This model is a bit weak for agentic behaviours though
+    api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
+    api_key="YOUR_API_KEY", # replace with API key if necessary
+    num_ctx=8192, # ollama default is 2048 which will fail horribly. 8192 works for easy tasks, more is better. Check https://huggingface.co/spaces/NyxKrage/LLM-Model-VRAM-Calculator to calculate how much VRAM this will need for the selected model.
+)
+agent = CodeAgent(tools=[], model=model, add_base_tools=True)
+agent.run(
+    "Could you give me the 5th number in the Fibonacci sequence?",
+)
+# Out[]:
+AgentGenerationError: Error in generating model output:
+litellm.APIConnectionError: Ollama_chatException - Server error '500 Internal Server Error' for 
+url 'http://localhost:11434/api/chat'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
+
+
+
+# Optiplex9020-1/WIN10
+# 2025MAY02 (This was run after ollama upgrade from 0.6.6 to 0.6.7)
+# Trying with gemma3:12b again in WIN [Worked perfectly in Windows: perfect amswer]
+In [1]: from smolagents import CodeAgent, LiteLLMModel
+
+In [2]: model = LiteLLMModel(
+   ...:     model_id="ollama_chat/gemma3:12b", # This model is a bit weak for agentic behaviours th
+      ⋮ ough
+   ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai com
+      ⋮ patible server if necessary
+   ...:   # ollama default is 2048 which will fail horribly. 8192 works for easy tasks, more is bet
+      ⋮ ter. Check https://huggingface.co/spaces/NyxKrage/LLM-Model-VRAM-Calculator to calculate ho
+      ⋮ w much VRAM this will need for the selected model.
+   ...: )
+
+In [3]: agent = CodeAgent(tools=[], model=model, add_base_tools=True)
+
+In [4]: agent.run(
+   ...:     "Could you give me the 5th number in the Fibonacci sequence?",
+   ...:     )
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Could you give me the 5th number in the Fibonacci sequence?                                      │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ─────────────────────────────────────────────────────────────────────────
+  def fibonacci(n):
+      a = 0
+      b = 1
+      if n < 0:
+          print("Incorrect input")
+      elif n == 0:
+          return 0
+      elif n == 1:
+          return 1
+      else:
+          for i in range(2, n + 1):
+              c = a + b
+              a = b
+              b = c
+          return b
+  print(fibonacci(4))
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+Execution logs:
+3
+
+Out: None
+[Step 1: Duration 448.86 seconds| Input tokens: 2,304 | Output tokens: 181]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ─────────────────────────────────────────────────────────────────────────
+  final_answer(3)
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+Out - Final answer: 3
+[Step 2: Duration 459.51 seconds| Input tokens: 4,968 | Output tokens: 309]
+Out[4]: 3
+
+
+
+# Optiplex7050/Linux
+# 2025MAY01
+In [5]: 
+   ...: # Trying with gemma3:12b [Did not run: need to change parameters]
+   ...: model = LiteLLMModel(
+   ...:     model_id="ollama_chat/gemma3:12b", # This model is a bit weak for ag
+      ⋮ entic behaviours though
+   ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or
+      ⋮  remote open-ai compatible server if necessary
+   ...:     api_key="YOUR_API_KEY", # replace with API key if necessary
+   ...:     num_ctx=8192, # ollama default is 2048 which will fail horribly. 819
+      ⋮ 2 works for easy tasks, more is better. Check https://huggingface.co/spa
+      ⋮ ces/NyxKrage/LLM-Model-VRAM-Calculator to calculate how much VRAM this w
+      ⋮ ill need for the selected model.
+   ...: )
+Python-dotenv could not parse statement starting at line 3
+Python-dotenv could not parse statement starting at line 3
+
+In [6]: 
+   ...: # Trying with gemma3:12b [WORKED OK WITH OLLAMA/LITELLM in Linux; changed params]
+   # RAM = 32 GB (max RAM occupied = 64%)
+   ...: model = LiteLLMModel(
+   ...:     model_id="ollama_chat/gemma3:12b", # This model is a bit weak for ag
+      ⋮ entic behaviours though
+   ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or
+      ⋮  remote open-ai compatible server if necessary
+   ...: )
+
+In [7]: agent = CodeAgent(tools=[], model=model, add_base_tools=True)
+   ...: 
+
+In [8]: agent.run(
+   ...:     "Could you give me the 5th number in the Fibonacci sequence?",
+   ...: )
+╭────────────────────────────────── New run ───────────────────────────────────╮
+│                                                                              │
+│ Could you give me the 5th number in the Fibonacci sequence?                  │
+│                                                                              │
+╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Error in code parsing:
+Your code snippet is invalid, because the regex pattern 
+```(?:py|python)?\s*\n(.*?)\n``` was not found in it.
+            Here is your code snippet:
+            The Fibonacci sequence starts with 0, 1, and each subsequent number 
+is the sum of the two preceding ones.
+
+So the sequence goes:
+
+1.  0
+2.  1
+3.  1 (0+1)
+4.  2 (1+1)
+5.  **3** (1+2)
+
+Therefore, the 5th number in the Fibonacci sequence is **3**.
+
+            Make sure to include code with the correct pattern, for instance:
+            Thoughts: Your thoughts
+            Code:
+            ```py
+            # Your python code here
+            ```<end_code>
+Make sure to provide correct code blobs.
+[Step 1: Duration 43.95 seconds| Input tokens: 27 | Output tokens: 90]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  def fibonacci(n):                                                             
+      """                                                                       
+      Calculates the nth Fibonacci number.                                      
+                                                                                
+      Args:                                                                     
+          n: The index of the Fibonacci number to calculate (starting from 0).  
+                                                                                
+      Returns:                                                                  
+          The nth Fibonacci number.                                             
+      """                                                                       
+      if n <= 0:                                                                
+          return 0                                                              
+      elif n == 1:                                                              
+          return 1                                                              
+      else:                                                                     
+          a = 0                                                                 
+          b = 1                                                                 
+          for _ in range(2, n + 1):                                             
+              a, b = b, a + b                                                   
+          return b                                                              
+                                                                                
+  fifth_fibonacci = fibonacci(5)                                                
+  final_answer(fifth_fibonacci)                                                 
+ ────────────────────────────────────────────────────────────────────────────── 
+Out - Final answer: 5
+[Step 2: Duration 286.37 seconds| Input tokens: 2,075 | Output tokens: 312]
+Out[8]: 5
+
+
+
+# Optiplex9020-1/WIN10
+# 2025MAY02 (This was run after ollama upgrade from 0.6.6 to 0.6.7)
+# Trying with mistral-small3.1 again in WIN [Worked soso in Windows: near perfect amswer]
+model = LiteLLMModel(
+    model_id="ollama_chat/mistral-small3.1", 
+    api_base="http://localhost:11434",
+)
+agent = CodeAgent(tools=[], model=model, add_base_tools=True)
+agent.run(
+    "Could you give me the 5th number in the Fibonacci sequence?",
+)
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Could you give me the 5th number in the Fibonacci sequence?                                      │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/mistral-small3.1 ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ─────────────────────────────────────────────────────────────────────────
+  def fibonacci(n):
+      if n == 0:
+          return 0
+      elif n == 1:
+          return 1
+      else:
+          a, b = 0, 1
+          for _ in range(2, n + 1):
+              a, b = b, a + b
+          return b
+
+  fifth_fibonacci = fibonacci(5)
+  final_answer(fifth_fibonacci)
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+Out - Final answer: 5
+[Step 1: Duration 764.64 seconds| Input tokens: 2,131 | Output tokens: 120]
+Out[7]: 5
+
+
+
+
+
 from smolagents import ToolCallingAgent
 
 # Latitude7300/WIN11
@@ -1011,17 +1109,16 @@ def model_download_tool(task: str) -> str:
 from smolagents import CodeAgent, LiteLLMModel
 
 model = LiteLLMModel(
-    model_id="ollama_chat/llama3.2", # This model is a bit weak for agentic behaviours though
-    api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai compatible server if necessary
+    model_id="ollama_chat/llama3.2", 
+    api_base="http://localhost:11434",
     api_key="YOUR_API_KEY", # replace with API key if necessary
     num_ctx=8192, # ollama default is 2048 which will fail horribly. 
 )
-
 agent = CodeAgent(
     model = model,
     tools = [model_download_tool]
 )
-# Latitude7300/WIN11
+# Latitude7300/WIN11 [Perfect run, perfect answer]
 agent.run("Can you give me the name of the model that has the most downloads in the \
     'text-to-video' task on the Hugging Face Hub?")
 # Out[]:
@@ -1042,12 +1139,205 @@ Out[9]: 'Lightricks/LTX-Video'
 
 
 
+# Optiplex7050/Linux
+# 2025MAY01
+# Trying with llama3.2 [Ran OK WITH OLLAMA/LITELLM in Linux, but WRONG FINAL ANSWER]
+# RAM = 32 GB (max RAM occupied = ?)
+
+   ...: @tool
+   ...: def model_download_tool(task: str) -> str:
+   ...:     """
+   ...:     This is a tool that returns the most downloaded model of a given HF 
+      ⋮ model task on the Hugging \
+   ...:         Face Hub. It returns the name of the checkpoint.
+   ...: 
+   ...:     Args:
+   ...:         task: The task for which to get the download count.
+   ...:     """
+   ...:     most_downloaded_model = next(iter(list_models(filter=task, sort="dow
+      ⋮ nloads", direction=-1)))
+   ...:     return most_downloaded_model.id
+   ...: 
+   ...: from smolagents import CodeAgent, LiteLLMModel
+   ...: 
+   ...: model = LiteLLMModel(
+   ...:     model_id="ollama_chat/llama3.2", # This model is a bit weak for agen
+      ⋮ tic behaviours though
+   ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or
+      ⋮  remote open-ai compatible server if necessary
+   ...:     api_key="YOUR_API_KEY", # replace with API key if necessary
+   ...:     num_ctx=8192, # ollama default is 2048 which will fail horribly. 
+   ...: )
+
+In [7]: 
+   ...: agent = CodeAgent(
+   ...:     model = model,
+   ...:     tools = [model_download_tool]
+   ...: )
+   ...: # Optiplex7050/Linux
+   ...: agent.run("Can you give me the name of the model that has the most downl
+      ⋮ oads in the \
+   ...:     'text-to-video' task on the Hugging Face Hub?")
+╭────────────────────────────────── New run ───────────────────────────────────╮
+│                                                                              │
+│ Can you give me the name of the model that has the most downloads in the     │
+│ 'text-to-video' task on the Hugging Face Hub?                                │
+│                                                                              │
+╰─ LiteLLMModel - ollama_chat/llama3.2 ────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  model_name = model_download_tool(task='text-to-video')                        
+  print(model_name)                                                             
+ ────────────────────────────────────────────────────────────────────────────── 
+Execution logs:
+Lightricks/LTX-Video
+
+Out: None
+[Step 1: Duration 72.29 seconds| Input tokens: 2,052 | Output tokens: 99]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  most_downloaded_models = search(f"most downloaded models text-to-video")      
+  print(most_downloaded_models)                                                 
+ ────────────────────────────────────────────────────────────────────────────── 
+Code execution failed at line 'most_downloaded_models = search(f"most downloaded
+models text-to-video")' due to: InterpreterError: Forbidden function evaluation:
+'search' is not among the explicitly allowed tools or defined/imported in the 
+preceding code
+[Step 2: Duration 14.38 seconds| Input tokens: 4,288 | Output tokens: 220]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 3 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  hub_website = wiki(query="Hugging Face Hub text-to-video")                    
+  print(hub_website)                                                            
+ ────────────────────────────────────────────────────────────────────────────── 
+Code execution failed at line 'hub_website = wiki(query="Hugging Face Hub 
+text-to-video")' due to: InterpreterError: Forbidden function evaluation: 'wiki'
+is not among the explicitly allowed tools or defined/imported in the preceding 
+code
+[Step 3: Duration 14.31 seconds| Input tokens: 6,801 | Output tokens: 312]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 4 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  final_answer("Check the official Hugging Face Hub website for more            
+  information on the most downloaded models for the 'text-to-video' task.")     
+ ────────────────────────────────────────────────────────────────────────────── 
+Out - Final answer: Check the official Hugging Face Hub website for more 
+information on the most downloaded models for the 'text-to-video' task.
+[Step 4: Duration 12.07 seconds| Input tokens: 9,558 | Output tokens: 380]
+Out[7]: "Check the official Hugging Face Hub website for more information on the most downloaded models for the 'text-to-video' task.
+
+
+
+# Running same model, but changing parameters (omitting num_ctx)
+# Optiplex7050/Linux
+# 2025MAY01
+# Trying with llama3.2 [WORKED OK WITH OLLAMA/LITELLM in Linux, but got lost: WRONG FINAL ANSWER]
+# RAM = 32 GB (max RAM occupied = 9.7%)
+from smolagents import CodeAgent, LiteLLMModel
+
+model = LiteLLMModel(
+    model_id="ollama_chat/llama3.2",
+    api_base="http://localhost:11434"
+)
+
+agent = CodeAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+# Optiplex7050/Linux
+agent.run("Can you give me the name of the model that has the most downloads in the \
+    'text-to-video' task on the Hugging Face Hub?")
+╭────────────────────────────────── New run ───────────────────────────────────╮
+│                                                                              │
+│ Can you give me the name of the model that has the most downloads in the     │
+│ 'text-to-video' task on the Hugging Face Hub?                                │
+│                                                                              │
+╰─ LiteLLMModel - ollama_chat/llama3.2 ────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Error in code parsing:
+Your code snippet is invalid, because the regex pattern 
+```(?:py|python)?\s*\n(.*?)\n``` was not found in it.
+            Here is your code snippet:
+            You can use the following API call to get the top models:
+
+GET https://huggingface.co/models?q=text-to-video&max_results=100
+
+This will return a list of the top 100 models for the "text-to-video" task. To 
+find the model with the most downloads, you can sort the results by the 
+"total_downloads" field in descending order.
+
+Here's an example API call:
+
+GET 
+https://huggingface.co/models?q=text-to-video&sort_by=total_downloads&direction 
+descend&max_results=1
+
+This will return only the top model with the most downloads for the 
+"text-to-video" task.
+
+Alternatively, you can also use the Hugging Face Hub's search bar to find the 
+top models for this task. Just go to the "text-to-video" page on the Hugging 
+Face Hub and click on the "Models" tab. Then, sort the results by "Total 
+downloads" in descending order to see the model with the most downloads.
+
+Please note that the "total_downloads" field may not always be up-to-date, as 
+it's a dynamically generated value based on user interactions with
+            Make sure to include code with the correct pattern, for instance:
+            Thoughts: Your thoughts
+            Code:
+            ```py
+            # Your python code here
+            ```<end_code>
+Make sure to provide correct code blobs.
+[Step 1: Duration 21.27 seconds| Input tokens: 58 | Output tokens: 233]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  def model_download_tool(task: string) -> string:                              
+      """This is a tool that returns the most downloaded model of a given HF    
+  model task on the Hugging Face Hub. It returns the name of the checkpoint.    
+                                                                                
+      Args:                                                                     
+          task: The task for which to get the download count.                   
+      """                                                                       
+                                                                                
+  def final_answer(answer: any) -> any:                                         
+      """Provides a final answer to the given problem.                          
+                                                                                
+      Args:                                                                     
+          answer: The final answer to the problem                               
+      """                                                                       
+                                                                                
+  model_download_tool("text-to-video")                                          
+ ────────────────────────────────────────────────────────────────────────────── 
+Out: Lightricks/LTX-Video
+[Step 2: Duration 76.48 seconds| Input tokens: 2,106 | Output tokens: 392]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 3 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ───────────────────────────────────────────────────── 
+  def model_download_tool(task: string) -> string:                              
+      """This is a tool that returns the most downloaded model of a given HF    
+  model task on the Hugging Face Hub. It returns the name of the checkpoint.    
+                                                                                
+      Args:                                                                     
+          task: The task for which to get the download count.                   
+      """                                                                       
+                                                                                
+  model_name = model_download_tool("video-to-video")                            
+  print(model_name)  # Lightricks/LTX-Video                                     
+ ────────────────────────────────────────────────────────────────────────────── 
+Execution logs:
+calcuis/ltxv-gguf
+
+Out: None
+[Step 3: Duration 75.32 seconds| Input tokens: 4,145 | Output tokens: 544]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 4 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+^C[Step 4: Duration 30.22 seconds| Input tokens: 6,184 | Output tokens: 696]
+---------------------------------------------------------------------------
+KeyboardInterrupt                  
+
+
+
 # Optiplex9020-1/WIN10 (Mistral did not work in Windows)
 In [22]: model = LiteLLMModel(
-    ...:     model_id="ollama_chat/mistral-small3.1", # This model is a bit weak for agentic behavi
-       ⋮ ours though
-    ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or remote open-ai co
-       ⋮ mpatible server if necessary
+    ...:     model_id="ollama_chat/mistral-small3.1",
+    ...:     api_base="http://localhost:11434",
     ...:     api_key="YOUR_API_KEY", # replace with API key if necessary
     ...:     num_ctx=8192, # ollama default is 2048 which will fail horribly.
     ...: )
@@ -1076,6 +1366,52 @@ litellm.APIConnectionError: Ollama_chatException - Server error '500 Internal Se
 'http://localhost:11434/api/chat'
 For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
 [Step 1: Duration 38.45 seconds]
+
+
+
+# Optiplex9020-1/WIN10
+# 2025MAY02 (This was run after ollama upgrade from 0.6.6 to 0.6.7)
+# Trying AGAIN with mistral-small3.1 in WIN [Worked perfectly in Windows: perfect amswer]
+from smolagents import CodeAgent, LiteLLMModel
+from smolagents import tool
+from huggingface_hub import list_models
+
+@tool
+def model_download_tool(task: str) -> str:
+    """
+    This is a tool that returns the most downloaded model of a given HF model task on the Hugging \
+        Face Hub. It returns the name of the checkpoint.
+
+    Args:
+        task: The task for which to get the download count.
+    """
+    most_downloaded_model = next(iter(list_models(filter=task, sort="downloads", direction=-1)))
+    return most_downloaded_model.id
+
+model = LiteLLMModel(
+    model_id="ollama_chat/mistral-small3.1",
+    api_base="http://localhost:11434",
+)
+agent = CodeAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+agent.run("Can you give me the name of the model that has the most downloads in the \
+'text-to-video' task on the Hugging Face Hub?")
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Can you give me the name of the model that has the most downloads in the 'text-to-video' task on │
+│ the Hugging Face Hub?                                                                            │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/mistral-small3.1 ────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ─────────────────────────────────────────────────────────────────────────
+  model_name = model_download_tool(task="text-to-video")
+  final_answer(model_name)
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+Out - Final answer: Lightricks/LTX-Video
+[Step 1: Duration 722.59 seconds| Input tokens: 2,104 | Output tokens: 69]
+Out[15]: 'Lightricks/LTX-Video'
 
 
 
@@ -1192,200 +1528,6 @@ Solve for X in Equation "1.   Find value of given number ."
 
 
 
-# Optiplex7050/Linux
-# 2025MAY01
-# Trying with llama3.2 [Ran OK WITH OLLAMA/LITELLM in Linux, but WRONG FINAL ANSWER]
-# RAM = 32 GB (max RAM occupied = ?)
-
-   ...: @tool
-   ...: def model_download_tool(task: str) -> str:
-   ...:     """
-   ...:     This is a tool that returns the most downloaded model of a given HF 
-      ⋮ model task on the Hugging \
-   ...:         Face Hub. It returns the name of the checkpoint.
-   ...: 
-   ...:     Args:
-   ...:         task: The task for which to get the download count.
-   ...:     """
-   ...:     most_downloaded_model = next(iter(list_models(filter=task, sort="dow
-      ⋮ nloads", direction=-1)))
-   ...:     return most_downloaded_model.id
-   ...: 
-   ...: from smolagents import CodeAgent, LiteLLMModel
-   ...: 
-   ...: model = LiteLLMModel(
-   ...:     model_id="ollama_chat/llama3.2", # This model is a bit weak for agen
-      ⋮ tic behaviours though
-   ...:     api_base="http://localhost:11434", # replace with 127.0.0.1:11434 or
-      ⋮  remote open-ai compatible server if necessary
-   ...:     api_key="YOUR_API_KEY", # replace with API key if necessary
-   ...:     num_ctx=8192, # ollama default is 2048 which will fail horribly. 
-   ...: )
-
-In [7]: 
-   ...: agent = CodeAgent(
-   ...:     model = model,
-   ...:     tools = [model_download_tool]
-   ...: )
-   ...: # Optiplex7050/Linux
-   ...: agent.run("Can you give me the name of the model that has the most downl
-      ⋮ oads in the \
-   ...:     'text-to-video' task on the Hugging Face Hub?")
-╭────────────────────────────────── New run ───────────────────────────────────╮
-│                                                                              │
-│ Can you give me the name of the model that has the most downloads in the     │
-│ 'text-to-video' task on the Hugging Face Hub?                                │
-│                                                                              │
-╰─ LiteLLMModel - ollama_chat/llama3.2 ────────────────────────────────────────╯
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  model_name = model_download_tool(task='text-to-video')                        
-  print(model_name)                                                             
- ────────────────────────────────────────────────────────────────────────────── 
-Execution logs:
-Lightricks/LTX-Video
-
-Out: None
-[Step 1: Duration 72.29 seconds| Input tokens: 2,052 | Output tokens: 99]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  most_downloaded_models = search(f"most downloaded models text-to-video")      
-  print(most_downloaded_models)                                                 
- ────────────────────────────────────────────────────────────────────────────── 
-Code execution failed at line 'most_downloaded_models = search(f"most downloaded
-models text-to-video")' due to: InterpreterError: Forbidden function evaluation:
-'search' is not among the explicitly allowed tools or defined/imported in the 
-preceding code
-[Step 2: Duration 14.38 seconds| Input tokens: 4,288 | Output tokens: 220]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 3 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  hub_website = wiki(query="Hugging Face Hub text-to-video")                    
-  print(hub_website)                                                            
- ────────────────────────────────────────────────────────────────────────────── 
-Code execution failed at line 'hub_website = wiki(query="Hugging Face Hub 
-text-to-video")' due to: InterpreterError: Forbidden function evaluation: 'wiki'
-is not among the explicitly allowed tools or defined/imported in the preceding 
-code
-[Step 3: Duration 14.31 seconds| Input tokens: 6,801 | Output tokens: 312]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 4 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  final_answer("Check the official Hugging Face Hub website for more            
-  information on the most downloaded models for the 'text-to-video' task.")     
- ────────────────────────────────────────────────────────────────────────────── 
-Out - Final answer: Check the official Hugging Face Hub website for more 
-information on the most downloaded models for the 'text-to-video' task.
-[Step 4: Duration 12.07 seconds| Input tokens: 9,558 | Output tokens: 380]
-Out[7]: "Check the official Hugging Face Hub website for more information on the most downloaded models for the 'text-to-video' task.
-
-
-
-# Running same model, but changing parameters (omitting num_ctx)
-# Optiplex7050/Linux
-# 2025MAY01
-# Trying with llama3.2 [WORKED OK WITH OLLAMA/LITELLM in Linux, but got lost: WRONG FINAL ANSWER]
-# RAM = 32 GB (max RAM occupied = 9.7%)
-
-from smolagents import CodeAgent, LiteLLMModel
-
-model = LiteLLMModel(
-    model_id="ollama_chat/llama3.2",
-    api_base="http://localhost:11434"
-)
-
-agent = CodeAgent(
-    model = model,
-    tools = [model_download_tool]
-)
-# Optiplex7050/Linux
-agent.run("Can you give me the name of the model that has the most downloads in the \
-    'text-to-video' task on the Hugging Face Hub?")
-╭────────────────────────────────── New run ───────────────────────────────────╮
-│                                                                              │
-│ Can you give me the name of the model that has the most downloads in the     │
-│ 'text-to-video' task on the Hugging Face Hub?                                │
-│                                                                              │
-╰─ LiteLLMModel - ollama_chat/llama3.2 ────────────────────────────────────────╯
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Error in code parsing:
-Your code snippet is invalid, because the regex pattern 
-```(?:py|python)?\s*\n(.*?)\n``` was not found in it.
-            Here is your code snippet:
-            You can use the following API call to get the top models:
-
-GET https://huggingface.co/models?q=text-to-video&max_results=100
-
-This will return a list of the top 100 models for the "text-to-video" task. To 
-find the model with the most downloads, you can sort the results by the 
-"total_downloads" field in descending order.
-
-Here's an example API call:
-
-GET 
-https://huggingface.co/models?q=text-to-video&sort_by=total_downloads&direction 
-descend&max_results=1
-
-This will return only the top model with the most downloads for the 
-"text-to-video" task.
-
-Alternatively, you can also use the Hugging Face Hub's search bar to find the 
-top models for this task. Just go to the "text-to-video" page on the Hugging 
-Face Hub and click on the "Models" tab. Then, sort the results by "Total 
-downloads" in descending order to see the model with the most downloads.
-
-Please note that the "total_downloads" field may not always be up-to-date, as 
-it's a dynamically generated value based on user interactions with
-            Make sure to include code with the correct pattern, for instance:
-            Thoughts: Your thoughts
-            Code:
-            ```py
-            # Your python code here
-            ```<end_code>
-Make sure to provide correct code blobs.
-[Step 1: Duration 21.27 seconds| Input tokens: 58 | Output tokens: 233]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  def model_download_tool(task: string) -> string:                              
-      """This is a tool that returns the most downloaded model of a given HF    
-  model task on the Hugging Face Hub. It returns the name of the checkpoint.    
-                                                                                
-      Args:                                                                     
-          task: The task for which to get the download count.                   
-      """                                                                       
-                                                                                
-  def final_answer(answer: any) -> any:                                         
-      """Provides a final answer to the given problem.                          
-                                                                                
-      Args:                                                                     
-          answer: The final answer to the problem                               
-      """                                                                       
-                                                                                
-  model_download_tool("text-to-video")                                          
- ────────────────────────────────────────────────────────────────────────────── 
-Out: Lightricks/LTX-Video
-[Step 2: Duration 76.48 seconds| Input tokens: 2,106 | Output tokens: 392]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 3 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
- ─ Executing parsed code: ───────────────────────────────────────────────────── 
-  def model_download_tool(task: string) -> string:                              
-      """This is a tool that returns the most downloaded model of a given HF    
-  model task on the Hugging Face Hub. It returns the name of the checkpoint.    
-                                                                                
-      Args:                                                                     
-          task: The task for which to get the download count.                   
-      """                                                                       
-                                                                                
-  model_name = model_download_tool("video-to-video")                            
-  print(model_name)  # Lightricks/LTX-Video                                     
- ────────────────────────────────────────────────────────────────────────────── 
-Execution logs:
-calcuis/ltxv-gguf
-
-Out: None
-[Step 3: Duration 75.32 seconds| Input tokens: 4,145 | Output tokens: 544]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 4 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-^C[Step 4: Duration 30.22 seconds| Input tokens: 6,184 | Output tokens: 696]
----------------------------------------------------------------------------
-KeyboardInterrupt                  
-
 
 
 # Running same model, but changing function calling method (using ToolCallingAgent)
@@ -1424,7 +1566,10 @@ agent.run("Can you give me the name of the model that has the most downloads in 
 
 
 
-# RUN AGAIN, everything  exactly the same: INFINITE LOOP
+# Trying again with llama3.2, everything  exactly the same : INFINITE LOOP
+# Optiplex7050/Linux
+# 2025MAY01
+# RAM = 32 GB (max RAM occupied = 9.4%)
 ╭────────────────────────────────── New run ───────────────────────────────────╮
 │                                                                              │
 │ Can you give me the name of the model that has the most downloads in the     │
@@ -1476,7 +1621,10 @@ Observations: Lightricks/LTX-Video
 KeyboardInterrupt
 
 
-# Trying with gemma3:12b [Process seems ok, but not able to provide answer]
+
+# Trying with gemma3:12b [Process seems ok, but not able to provide answer: Timeout]
+# Optiplex7050/Linux
+# 2025MAY01
 # Max RAM: 86.8%
 model = LiteLLMModel(
     model_id="ollama_chat/gemma3:12b",
@@ -1520,11 +1668,14 @@ Final answer: I encountered an error retrieving the most downloaded
 text-to-video model due to a server timeout. I am unable to fulfill the request 
 at this time.
 [Step 2: Duration 52.16 seconds| Input tokens: 2,817 | Output tokens: 71]
-Out[28]: 'I encountered an error retrieving the most downloaded text-to-video model due to a server timeout. I am unable to fulfill the request at this time.'
+Out[28]: 'I encountered an error retrieving the most downloaded text-to-video model due to a '
+'server timeout. I am unable to fulfill the request at this time.'
 
 
 
-# Trying with gemma3:12b [Process ran OK; there REALLY WAS a connection problem]
+# Trying AGAIN with gemma3:12b [Process OK; Answer OK; there REALLY WAS a connection problem]
+# Optiplex7050/Linux
+# 2025MAY01
 # Max RAM: 86.8%
 model = LiteLLMModel(
     model_id="ollama_chat/gemma3:12b",
@@ -1563,6 +1714,8 @@ Out[44]: 'Lightricks/LTX-Video'
 
 
 # Trying with qwen2.5:14b [Process seems ok, but did not run correctly till the end]
+# Optiplex7050/Linux
+# 2025MAY01
 # Max RAM: 46.8%
 model = LiteLLMModel(
     model_id="ollama_chat/qwen2.5:14b",
@@ -1597,6 +1750,8 @@ agent.run("Can you give me the name of the model that has the most downloads in 
 
 from smolagents import ToolCallingAgent, TransformersModel
 
+# Optiplex7050/Linux
+# 2025MAY01
 model_id = "meta-llama/Llama-3.2-3B-Instruct"
 model = TransformersModel(model_id=model_id)
 # Out[]:
