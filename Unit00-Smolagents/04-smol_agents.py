@@ -14,7 +14,7 @@ https://huggingface.co/docs/smolagents/guided_tour?Pick+a+LLM=Ollama
 # !pip install smolagents[litellm]
 
 
-# CodeAgent and ToolCallingAgent
+# --------------------------- CodeAgent and ToolCallingAgent --------------------------------------
 
 from smolagents import CodeAgent, LiteLLMModel
 
@@ -685,7 +685,6 @@ Out: None
 [Step 19: Duration 38.09 seconds| Input tokens: 91,771 | Output tokens: 2,779]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 20 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-
 [STOPPED MANUALLY]
 
 
@@ -701,9 +700,7 @@ model = LiteLLMModel(
     model_id="ollama_chat/llama3.2",
     api_base="http://localhost:11434"
 )
-
 agent = CodeAgent(tools=[], model=model, add_base_tools=True)
-
 agent.run(
     "Could you give me the 5th number in the Fibonacci sequence?",
 )
@@ -791,9 +788,6 @@ Error: expected an indented block after function definition on line 1
 Out - Final answer: The 5th number in the Fibonacci sequence is indeed 3.
 [Step 4: Duration 68.89 seconds| Input tokens: 6,186 | Output tokens: 712]
 Out[7]: 'The 5th number in the Fibonacci sequence is indeed 3.'
-
-
-
 
 
 # Latitude7300/WIN11
@@ -959,7 +953,7 @@ Out[8]: 5
 
 # Optiplex9020-1/WIN10
 # 2025MAY02 (This was run after ollama upgrade from 0.6.6 to 0.6.7)
-# Trying with mistral-small3.1 again in WIN [Worked soso in Windows: near perfect amswer]
+# Trying with mistral-small3.1 again in WIN [Worked soso in Windows: near perfect answer]
 model = LiteLLMModel(
     model_id="ollama_chat/mistral-small3.1", 
     api_base="http://localhost:11434",
@@ -995,7 +989,7 @@ Out[7]: 5
 
 
 
-
+# ----- Using ToolCallingAgent -----
 
 from smolagents import ToolCallingAgent
 
@@ -1035,7 +1029,7 @@ Out[16]: '{"title": "How to Use Transformers for Natural Language Understanding 
 
 
 
-# Default toolbox
+# --------------------------------- Default toolbox -----------------------------------------------
 
 # Latitude7300/WIN11
 from smolagents import DuckDuckGoSearchTool
@@ -1056,7 +1050,8 @@ On March 14, 2004, he was elected President of Russia for the second term. 2008 
 
 
 
-# Customized tools
+# ------------------------------------- Customized tools -------------------------------------------
+# ----- Using CodeAgent -----
 
 # Latitude7300/WIN11
 # Previous test 
@@ -1386,7 +1381,7 @@ Out[15]: 'Lightricks/LTX-Video'
 
 # Optiplex9020-1/WIN10 
 # 2025MAY02
-# Trying phi4-mini-reasoning. It ran OK, but got completely lost. 1st TRY 
+# Trying phi4-mini-reasoning. 1st TRY: It ran OK, but got completely lost.
 model = LiteLLMModel(
     model_id="ollama_chat/phi4-mini-reasoning",
     api_base="http://localhost:11434/api/chat",
@@ -1496,7 +1491,7 @@ Solve for X in Equation "1.   Find value of given number ."
 
 # Optiplex9020-1/WIN10 
 # 2025MAY03
-# Trying phi4-mini-reasoning. It ran OK, but got completely lost. 2nd TRY 
+# Trying phi4-mini-reasoning. 2nd TRY: It ran OK, but got completely lost.
 model = LiteLLMModel(
     model_id="ollama_chat/phi4-mini-reasoning",
     api_base="http://localhost:11434"
@@ -1572,13 +1567,29 @@ KeyboardInterrupt                         Traceback (most recent call last)
 
 
 
-# Running same model, but changing function calling method (using ToolCallingAgent)
+
+
+# ----- Using ToolCallingAgent -----
+
 # Optiplex7050/Linux
 # 2025MAY01
-# Trying with llama3.2 [WORKED OK WITH OLLAMA/LITELLM in Linux, ...]
+# Trying with llama3.2 [WORKED OK WITH OLLAMA/LITELLM in Linux, Answer: Timeout]
 # RAM = 32 GB (max RAM occupied = 9.4%)
-
 from smolagents import ToolCallingAgent, LiteLLMModel
+from smolagents import tool
+from huggingface_hub import list_models
+
+@tool
+def model_download_tool(task: str) -> str:
+    """
+    This is a tool that returns the most downloaded model of a given HF model task on the Hugging \
+        Face Hub. It returns the name of the checkpoint.
+
+    Args:
+        task: The task for which to get the download count.
+    """
+    most_downloaded_model = next(iter(list_models(filter=task, sort="downloads", direction=-1)))
+    return most_downloaded_model.id
 
 model = LiteLLMModel(
     model_id="ollama_chat/llama3.2",
@@ -1608,9 +1619,9 @@ agent.run("Can you give me the name of the model that has the most downloads in 
 
 
 
-# Trying again with llama3.2, everything  exactly the same : INFINITE LOOP
 # Optiplex7050/Linux
 # 2025MAY01
+# Trying again with llama3.2, everything  exactly the same. Bad run: INFINITE LOOP
 # RAM = 32 GB (max RAM occupied = 9.4%)
 ╭────────────────────────────────── New run ───────────────────────────────────╮
 │                                                                              │
@@ -1664,9 +1675,9 @@ KeyboardInterrupt
 
 
 
-# Trying with gemma3:12b [Process seems ok, but not able to provide answer: Timeout]
 # Optiplex7050/Linux
 # 2025MAY01
+# Trying with gemma3:12b [Process seems ok, but not able to provide answer: Timeout]
 # Max RAM: 86.8%
 model = LiteLLMModel(
     model_id="ollama_chat/gemma3:12b",
@@ -1715,10 +1726,10 @@ Out[28]: 'I encountered an error retrieving the most downloaded text-to-video mo
 
 
 
-# Trying AGAIN with gemma3:12b [Process OK; Answer OK; there REALLY WAS a connection problem]
 # Optiplex7050/Linux
 # 2025MAY01
-# Max RAM: 86.8%
+# Trying AGAIN with gemma3:12b [2nd try - Process OK; Answer PERFECT; there WAS a connection problem]
+# Max RAM: 86.8% / 210 sec = 3.5 min
 model = LiteLLMModel(
     model_id="ollama_chat/gemma3:12b",
     api_base="http://localhost:11434",
@@ -1755,9 +1766,140 @@ Out[44]: 'Lightricks/LTX-Video'
 
 
 
-# Trying with qwen2.5:14b [Process seems ok, but did not run correctly till the end]
+# Optiplex9020-1/WIN10
+# 2025MAY03
+# Trying with gemma3:4b [Process OK; Answer: PERFECT]
+# Max RAM: ? /  sec 133 = 2.2 min
+model = LiteLLMModel(
+    model_id="ollama_chat/gemma3:4b",
+    api_base="http://localhost:11434",
+)
+agent = ToolCallingAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+# Optiplex9020-1/WIN10
+agent.run("Can you give me the name of the model that has the most downloads in the \
+    'text-to-video' task on the Hugging Face Hub?")
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Can you give me the name of the model that has the most downloads in the     'text-to-video'     │
+│ task on the Hugging Face Hub?                                                                    │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/gemma3:4b ───────────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'model_download_tool' with arguments: {'task': 'text-to-video'}                    │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+Observations: Lightricks/LTX-Video
+[Step 1: Duration 67.25 seconds| Input tokens: 1,234 | Output tokens: 23]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': 'Lightricks/LTX-Video'}                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+Final answer: Lightricks/LTX-Video
+[Step 2: Duration 66.60 seconds| Input tokens: 2,585 | Output tokens: 47]
+Out[11]: 'Lightricks/LTX-Video'
+
+
+
+# Optiplex9020-1/WIN10
+# 2025MAY03
+# Trying with gemma3:12b [Process OK; Answer: PERFECT]
+# Max RAM: ? / 440 sec = 7.3 min
+from smolagents import ToolCallingAgent, LiteLLMModel
+from smolagents import tool
+from huggingface_hub import list_models
+
+@tool
+def model_download_tool(task: str) -> str:
+    """
+    This is a tool that returns the most downloaded model of a given HF model task on the Hugging \
+        Face Hub. It returns the name of the checkpoint.
+
+    Args:
+        task: The task for which to get the download count.
+    """
+    most_downloaded_model = next(iter(list_models(filter=task, sort="downloads", direction=-1)))
+    return most_downloaded_model.id
+
+model = LiteLLMModel(
+    model_id="ollama_chat/gemma3:12b",
+    api_base="http://localhost:11434",
+)
+agent = ToolCallingAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+# Optiplex9020-1/WIN10
+agent.run("Can you give me the name of the model that has the most downloads in the \
+    'text-to-video' task on the Hugging Face Hub?")
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Can you give me the name of the model that has the most downloads in the     'text-to-video'     │
+│ task on the Hugging Face Hub?                                                                    │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'model_download_tool' with arguments: {'task': 'text-to-video'}                    │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+Observations: Lightricks/LTX-Video
+[Step 1: Duration 223.64 seconds| Input tokens: 1,234 | Output tokens: 23]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': 'Lightricks/LTX-Video'}                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+Final answer: Lightricks/LTX-Video
+[Step 2: Duration 217.10 seconds| Input tokens: 2,588 | Output tokens: 54]
+Out[10]: 'Lightricks/LTX-Video'
+
+
+
+# Optiplex9020-1/WIN10
+# 2025MAY03
+# Trying with gemma3:27b [Process OK; Answer: PERFECT, but took long time 
+# Max RAM: ? / 1000 sec = 17 min
+from smolagents import ToolCallingAgent, LiteLLMModel
+from smolagents import tool
+from huggingface_hub import list_models
+
+model = LiteLLMModel(
+    model_id="ollama_chat/gemma3:27b",
+    api_base="http://localhost:11434",
+)
+agent = ToolCallingAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+# Optiplex9020-1/WIN10
+agent.run("Can you give me the name of the model that has the most downloads in the \
+    'text-to-video' task on the Hugging Face Hub?")
+╭──────────────────────────────────────────── New run ─────────────────────────────────────────────╮
+│                                                                                                  │
+│ Can you give me the name of the model that has the most downloads in the     'text-to-video'     │
+│ task on the Hugging Face Hub?                                                                    │
+│                                                                                                  │
+╰─ LiteLLMModel - ollama_chat/gemma3:27b ──────────────────────────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'model_download_tool' with arguments: {'task': 'text-to-video'}                    │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+Observations: Lightricks/LTX-Video
+[Step 1: Duration 506.77 seconds| Input tokens: 1,234 | Output tokens: 24]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': 'Lightricks/LTX-Video'}                  │
+╰──────────────────────────────────────────────────────────────────────────────────────────────────╯
+Final answer: Lightricks/LTX-Video
+[Step 2: Duration 495.85 seconds| Input tokens: 2,589 | Output tokens: 48]
+Out[14]: 'Lightricks/LTX-Video'
+
+
+
 # Optiplex7050/Linux
 # 2025MAY01
+# Trying with qwen2.5:14b [Process seems ok, but did not run correctly: Timeout]
 # Max RAM: 46.8%
 model = LiteLLMModel(
     model_id="ollama_chat/qwen2.5:14b",
@@ -1790,15 +1932,19 @@ agent.run("Can you give me the name of the model that has the most downloads in 
 
 
 
+
+
+# --------------------------------- Using Transformers --------------------------------------------
+
 from smolagents import ToolCallingAgent, TransformersModel
 
 # Optiplex7050/Linux
 # 2025MAY01
+# Downloading & running llama3.2 from HF : NOT OK, got lost.
 model_id = "meta-llama/Llama-3.2-3B-Instruct"
 model = TransformersModel(model_id=model_id)
 # Out[]:
 `max_new_tokens` not provided, using this default value for `max_new_tokens`: 5000
-
 
 HTTPError: 401 Client Error: Unauthorized for url: 
 https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json
@@ -1806,7 +1952,6 @@ GatedRepoError: 401 Client Error. (Request ID: Root=1-681472b7-032038cd14553d0f0
 
 Cannot access gated repo for url https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct/resolve/main/config.json.
 Access to model meta-llama/Llama-3.2-3B-Instruct is restricted. You must have access to it and be authenticated to access it. Please log in.
-
 
 import os
 from dotenv import load_dotenv
@@ -1816,7 +1961,6 @@ PATHP = "/media/clm/" + USB + "/" + \
 
 load_dotenv(dotenv_path=PATHP + ".env")
 HF_TOKEN = os.getenv("HF_TOKEN")
-
 
 agent = ToolCallingAgent(
     model = model,
@@ -1876,3 +2020,25 @@ Setting `pad_token_id` to `eos_token_id`:128001 for open-end generation.
 ^C[Step 4: Duration 11.47 seconds| Input tokens: 5,857 | Output tokens: 263]
 ---------------------------------------------------------------------------
 KeyboardInterrupt                
+
+
+
+# ----- Using pure transformers ----- [PENDING TO INSTALL Pytorch]
+
+# https://huggingface.co/docs/transformers/main/en/main_classes/agent#transformers.ReactCodeAgent
+
+# Optiplex9020-1/WIN10
+# 2025MAY03
+# Trying with SmolLM-135M-Instruct [Process OK; Answer: PERFECT, but took long time 
+# Max RAM: ? / sec =  min
+from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline, TransformersEngine
+
+model_name = "HuggingFaceTB/SmolLM-135M-Instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForCausalLM.from_pretrained(model_name)
+
+pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
+
+engine = TransformersEngine(pipe)
+engine([{"role": "user", "content": "Ok!"}], stop_sequences=["great"])
+
