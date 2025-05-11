@@ -81,7 +81,7 @@ from smolagents import CodeAgent, LiteLLMModel
 # Optiplex9020-1/WIN10
 # 2025MAY03
 # Trying with gemma3:4b [Process ok, perfect answer]
-# Max RAM: ? / 126 sec = 2.1 min
+# Max RAM: ? / 264.2 sec = 4.4 min
 model = LiteLLMModel(
     model_id="ollama_chat/gemma3:4b",
     api_base="http://localhost:11434",
@@ -100,15 +100,19 @@ agent.run("Can you give me the name of the client who got the most expensive rec
  ─ Executing parsed code: ─────────────────────────────────────────────────────────────────────────
   result = sql_engine(query="SELECT customer_name FROM receipts ORDER BY price DESC LIMIT 1")
   print(result)
-  final_answer(result)
  ──────────────────────────────────────────────────────────────────────────────────────────────────
 Execution logs:
 
 ('Woodrow Wilson',)
 
-Out - Final answer:
-('Woodrow Wilson',)
-[Step 1: Duration 126.20 seconds| Input tokens: 2,296 | Output tokens: 80]
-Out[5]: "\n('Woodrow Wilson',)"
+Out: None
+[Step 1: Duration 136.87 seconds| Input tokens: 2,296 | Output tokens: 76]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ ─ Executing parsed code: ─────────────────────────────────────────────────────────────────────────
+  final_answer("Woodrow Wilson")
+ ──────────────────────────────────────────────────────────────────────────────────────────────────
+Out - Final answer: Woodrow Wilson
+[Step 2: Duration 127.30 seconds| Input tokens: 4,763 | Output tokens: 132]
+Out[7]: 'Woodrow Wilson'
 
-agent.run("How much did thid client tip?")
+agent.run("How much did Woodrow Wilson tip?")
