@@ -991,7 +991,7 @@ Out[7]: 5
 
 # ----- Using ToolCallingAgent -----
 
-from smolagents import ToolCallingAgent
+from smolagents import ToolCallingAgent, LiteLLMModel
 
 # Latitude7300/WIN11
 # Use llama3.2 with ToolCallingAgent
@@ -1381,7 +1381,7 @@ Out[15]: 'Lightricks/LTX-Video'
 
 # Optiplex9020-1/WIN10 
 # 2025MAY02
-# Trying phi4-mini-reasoning. 1st TRY: It ran OK, but got completely lost.
+# Trying phi4-mini-reasoning. 1st TRY: It ran, but got completely lost.
 model = LiteLLMModel(
     model_id="ollama_chat/phi4-mini-reasoning",
     api_base="http://localhost:11434/api/chat",
@@ -1491,7 +1491,7 @@ Solve for X in Equation "1.   Find value of given number ."
 
 # Optiplex9020-1/WIN10 
 # 2025MAY03
-# Trying phi4-mini-reasoning. 2nd TRY: It ran OK, but got completely lost.
+# Trying phi4-mini-reasoning. 2nd TRY: It ran, but got completely lost.
 model = LiteLLMModel(
     model_id="ollama_chat/phi4-mini-reasoning",
     api_base="http://localhost:11434"
@@ -1770,6 +1770,22 @@ Out[44]: 'Lightricks/LTX-Video'
 # 2025MAY03
 # Trying with gemma3:4b [Process OK; Answer: PERFECT]
 # Max RAM: ? /  sec 133 = 2.2 min
+from smolagents import ToolCallingAgent, LiteLLMModel
+from smolagents import tool
+from huggingface_hub import list_models
+
+@tool
+def model_download_tool(task: str) -> str:
+    """
+    This is a tool that returns the most downloaded model of a given HF model task on the Hugging \
+        Face Hub. It returns the name of the checkpoint.
+
+    Args:
+        task: The task for which to get the download count.
+    """
+    most_downloaded_model = next(iter(list_models(filter=task, sort="downloads", direction=-1)))
+    return most_downloaded_model.id
+
 model = LiteLLMModel(
     model_id="ollama_chat/gemma3:4b",
     api_base="http://localhost:11434",
