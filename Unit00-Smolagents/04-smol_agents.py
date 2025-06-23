@@ -1675,94 +1675,63 @@ KeyboardInterrupt
 
 
 
-# Optiplex7050/Linux
-# 2025MAY01
-# Trying with gemma3:12b [Process seems ok, but not able to provide answer: Timeout]
-# Max RAM: 86.8%
+# Optiplex990/LINUX12
+# 2025JUN22
+# Trying with gemma3:4b [Replicating in Optiplex990 / Process OK; Answer: PERFECT]
+# MAX CPU: 400% / MAX RAM: 22% (20GB) / SEC: 145.49 + 154.43 = 299.92 = 4.99 min
+# INI TEMP before exec = +29.0 C / MAX TEMP during exec = +69.0 C / MAX TEMP after exec = +74.0 C 
+from smolagents import ToolCallingAgent, LiteLLMModel
+from smolagents import tool
+from huggingface_hub import list_models
+
+@tool
+def model_download_tool(task: str) -> str:
+    """
+    This is a tool that returns the most downloaded model of a given HF model task on the Hugging \
+        Face Hub. It returns the name of the checkpoint.
+
+    Args:
+        task: The task for which to get the download count.
+    """
+    most_downloaded_model = next(iter(list_models(filter=task, sort="downloads", direction=-1)))
+    return most_downloaded_model.id
+
 model = LiteLLMModel(
-    model_id="ollama_chat/gemma3:12b",
+    model_id="ollama_chat/gemma3:4b",
     api_base="http://localhost:11434",
-    num_ctx = 8192
 )
 agent = ToolCallingAgent(
     model = model,
     tools = [model_download_tool]
 )
-# Optiplex7050/Linux
-agent.run("Can you give me the name of the model that has the most downloads in the \
-    'text-to-video' task on the Hugging Face Hub?")
-────────────────────────────────── New run ───────────────────────────────────╮
+In [5]: agent.run("Can you give me the name of the model that has the most downl
+      ⋮ oads in the \
+   ...:     'text-to-video' task on the Hugging Face Hub?")
+╭────────────────────────────────── New run ───────────────────────────────────╮
 │                                                                              │
 │ Can you give me the name of the model that has the most downloads in the     │
 │ 'text-to-video' task on the Hugging Face Hub?                                │
 │                                                                              │
-╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────╯
+╰─ LiteLLMModel - ollama_chat/gemma3:4b ───────────────────────────────────────╯
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ╭──────────────────────────────────────────────────────────────────────────────╮
 │ Calling tool: 'model_download_tool' with arguments: {'task':                 │
 │ 'text-to-video'}                                                             │
 ╰──────────────────────────────────────────────────────────────────────────────╯
-Error executing tool 'model_download_tool' with arguments {"task": 
-"text-to-video"}: HfHubHTTPError: 504 Server Error: Gateway Timeout for url: 
-https://huggingface.co/api/models?filter=text-to-video&sort=downloads&direction=
--1 (Request ID: 
-Root=1-681460dd-54f892af7f1187e6559fc763;ab45ba9a-be33-4307-9ed1-2942d68f561b)
-
-The request is taking longer than expected, please try again later.
-Please try again or use another tool
-[Step 1: Duration 158.03 seconds| Input tokens: 1,234 | Output tokens: 23]
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-╭──────────────────────────────────────────────────────────────────────────────╮
-│ Calling tool: 'final_answer' with arguments: {'answer': 'I encountered an    │
-│ error retrieving the most downloaded text-to-video model due to a server     │
-│ timeout. I am unable to fulfill the request at this time.'}                  │
-╰──────────────────────────────────────────────────────────────────────────────╯
-Final answer: I encountered an error retrieving the most downloaded 
-text-to-video model due to a server timeout. I am unable to fulfill the request 
-at this time.
-[Step 2: Duration 52.16 seconds| Input tokens: 2,817 | Output tokens: 71]
-Out[28]: 'I encountered an error retrieving the most downloaded text-to-video model due to a '
-'server timeout. I am unable to fulfill the request at this time.'
-
-
-
-# Optiplex7050/Linux
-# 2025MAY01
-# Trying AGAIN with gemma3:12b [2nd try - Process OK; Answer PERFECT; there WAS a connection problem]
-# Max RAM: 86.8% / 210 sec = 3.5 min
-model = LiteLLMModel(
-    model_id="ollama_chat/gemma3:12b",
-    api_base="http://localhost:11434",
-    num_ctx = 8192
-)
-agent = ToolCallingAgent(
-    model = model,
-    tools = [model_download_tool]
-)
-# Optiplex7050/Linux
-agent.run("Can you give me the name of the model that has the most downloads in the \
-    'text-to-video' task on the Hugging Face Hub?")
-────────────────────────────────── New run ───────────────────────────────────╮
-│                                                                              │
-│ Can you give me the name of the model that has the most downloads in the     │
-│ 'text-to-video' task on the Hugging Face Hub?                                │
-│                                                                              │
-╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────╯
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-╭──────────────────────────────────────────────────────────────────────────────╮
-│ Calling tool: 'model_download_tool' with arguments: {'task':                 │
-│ 'text-to-video'}                                                             │
-╰──────────────────────────────────────────────────────────────────────────────╯
-Observations: Lightricks/LTX-Video
-[Step 1: Duration 189.08 seconds| Input tokens: 1,234 | Output tokens: 25]
+Observations: Wan-AI/Wan2.1-T2V-1.3B-Diffusers
+[Step 1: Duration 145.49 seconds| Input tokens: 1,238 | Output tokens: 24]
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ╭──────────────────────────────────────────────────────────────────────────────╮
 │ Calling tool: 'final_answer' with arguments: {'answer':                      │
-│ 'Lightricks/LTX-Video'}                                                      │
+│ 'Wan-AI/Wan2.1-T2V-1.3B-Diffusers'}                                          │
 ╰──────────────────────────────────────────────────────────────────────────────╯
-Final answer: Lightricks/LTX-Video
-[Step 2: Duration 21.79 seconds| Input tokens: 2,591 | Output tokens: 54]
-Out[44]: 'Lightricks/LTX-Video'
+Final answer: Wan-AI/Wan2.1-T2V-1.3B-Diffusers
+[Step 2: Duration 154.43 seconds| Input tokens: 2,606 | Output tokens: 61]
+Out[5]: 'Wan-AI/Wan2.1-T2V-1.3B-Diffusers'
+
+# CHECK that answer is not a hallucination:
+In [7]: model_download_tool("text-to-video")
+Out[7]: 'Wan-AI/Wan2.1-T2V-1.3B-Diffusers'
 
 
 
@@ -1910,6 +1879,97 @@ Observations: Lightricks/LTX-Video
 Final answer: Lightricks/LTX-Video
 [Step 2: Duration 495.85 seconds| Input tokens: 2,589 | Output tokens: 48]
 Out[14]: 'Lightricks/LTX-Video'
+
+
+
+# Optiplex7050/Linux
+# 2025MAY01
+# Trying with gemma3:12b [Process seems ok, but not able to provide answer: Timeout]
+# Max RAM: 86.8%
+model = LiteLLMModel(
+    model_id="ollama_chat/gemma3:12b",
+    api_base="http://localhost:11434",
+    num_ctx = 8192
+)
+agent = ToolCallingAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+# Optiplex7050/Linux
+agent.run("Can you give me the name of the model that has the most downloads in the \
+    'text-to-video' task on the Hugging Face Hub?")
+────────────────────────────────── New run ───────────────────────────────────╮
+│                                                                              │
+│ Can you give me the name of the model that has the most downloads in the     │
+│ 'text-to-video' task on the Hugging Face Hub?                                │
+│                                                                              │
+╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'model_download_tool' with arguments: {'task':                 │
+│ 'text-to-video'}                                                             │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Error executing tool 'model_download_tool' with arguments {"task": 
+"text-to-video"}: HfHubHTTPError: 504 Server Error: Gateway Timeout for url: 
+https://huggingface.co/api/models?filter=text-to-video&sort=downloads&direction=
+-1 (Request ID: 
+Root=1-681460dd-54f892af7f1187e6559fc763;ab45ba9a-be33-4307-9ed1-2942d68f561b)
+
+The request is taking longer than expected, please try again later.
+Please try again or use another tool
+[Step 1: Duration 158.03 seconds| Input tokens: 1,234 | Output tokens: 23]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': 'I encountered an    │
+│ error retrieving the most downloaded text-to-video model due to a server     │
+│ timeout. I am unable to fulfill the request at this time.'}                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Final answer: I encountered an error retrieving the most downloaded 
+text-to-video model due to a server timeout. I am unable to fulfill the request 
+at this time.
+[Step 2: Duration 52.16 seconds| Input tokens: 2,817 | Output tokens: 71]
+Out[28]: 'I encountered an error retrieving the most downloaded text-to-video model due to a '
+'server timeout. I am unable to fulfill the request at this time.'
+
+
+
+# Optiplex7050/Linux
+# 2025MAY01
+# Trying AGAIN with gemma3:12b [2nd try - Process OK; Answer PERFECT; there WAS a connection problem]
+# Max RAM: 86.8% / 210 sec = 3.5 min
+model = LiteLLMModel(
+    model_id="ollama_chat/gemma3:12b",
+    api_base="http://localhost:11434",
+    num_ctx = 8192
+)
+agent = ToolCallingAgent(
+    model = model,
+    tools = [model_download_tool]
+)
+# Optiplex7050/Linux
+agent.run("Can you give me the name of the model that has the most downloads in the \
+    'text-to-video' task on the Hugging Face Hub?")
+────────────────────────────────── New run ───────────────────────────────────╮
+│                                                                              │
+│ Can you give me the name of the model that has the most downloads in the     │
+│ 'text-to-video' task on the Hugging Face Hub?                                │
+│                                                                              │
+╰─ LiteLLMModel - ollama_chat/gemma3:12b ──────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'model_download_tool' with arguments: {'task':                 │
+│ 'text-to-video'}                                                             │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Observations: Lightricks/LTX-Video
+[Step 1: Duration 189.08 seconds| Input tokens: 1,234 | Output tokens: 25]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 2 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer':                      │
+│ 'Lightricks/LTX-Video'}                                                      │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Final answer: Lightricks/LTX-Video
+[Step 2: Duration 21.79 seconds| Input tokens: 2,591 | Output tokens: 54]
+Out[44]: 'Lightricks/LTX-Video'
 
 
 
