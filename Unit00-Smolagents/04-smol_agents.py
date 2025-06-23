@@ -1029,6 +1029,69 @@ Out[16]: '{"title": "How to Use Transformers for Natural Language Understanding 
 
 
 
+from smolagents import ToolCallingAgent, LiteLLMModel
+
+# Optiplex990/LINUX12
+# 2025JUN22
+# Trying with gemma3:4b [Process OK; Answer: VERY BAD]
+# MAX CPU: 400% / MAX RAM: 22% (20GB) / SEC: 124.07 = 2.07 min
+# INI TEMP before exec = +29.0 C / MAX TEMP during exec = +62.0 C / MAX TEMP after exec = N/A (open lid) 
+model = LiteLLMModel(
+    model_id="ollama_chat/gemma3:4b",
+    api_base="http://localhost:11434",
+)
+agent = ToolCallingAgent(
+    model = model,
+    tools = []
+)
+user_question = f"""CREATE TABLE work_orders (
+    ID NUMBER,
+    CREATED_AT TEXT,
+    COST FLOAT,
+    INVOICE_AMOUNT FLOAT,
+    IS_DUE BOOLEAN,
+    IS_OPEN BOOLEAN,
+    IS_OVERDUE BOOLEAN,
+    COUNTRY_NAME TEXT,
+)
+
+-- Using valid SQLite, answer the following questions for the tables provided above.
+
+-- how many work orders are open?
+
+SELECT"""
+agent.run(user_question)
+╭────────────────────────────────── New run ───────────────────────────────────╮
+│                                                                              │
+│ CREATE TABLE work_orders (                                                   │
+│     ID NUMBER,                                                               │
+│     CREATED_AT TEXT,                                                         │
+│     COST FLOAT,                                                              │
+│     INVOICE_AMOUNT FLOAT,                                                    │
+│     IS_DUE BOOLEAN,                                                          │
+│     IS_OPEN BOOLEAN,                                                         │
+│     IS_OVERDUE BOOLEAN,                                                      │
+│     COUNTRY_NAME TEXT,                                                       │
+│ )                                                                            │
+│                                                                              │
+│ -- Using valid SQLite, answer the following questions for the tables         │
+│ provided above.                                                              │
+│                                                                              │
+│ -- how many work orders are open?                                            │
+│                                                                              │
+│ SELECT                                                                       │
+│                                                                              │
+╰─ LiteLLMModel - ollama_chat/gemma3:4b ───────────────────────────────────────╯
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ Step 1 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Calling tool: 'final_answer' with arguments: {'answer': 'I cannot answer     │
+│ this question as the table is not provided.'}                                │
+╰──────────────────────────────────────────────────────────────────────────────╯
+Final answer: I cannot answer this question as the table is not provided.
+[Step 1: Duration 124.07 seconds| Input tokens: 1,124 | Output tokens: 29]
+Out[4]: 'I cannot answer this question as the table is not provided.'
+
+
 # --------------------------------- Default toolbox -----------------------------------------------
 
 # Latitude7300/WIN11
