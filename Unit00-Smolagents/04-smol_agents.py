@@ -2180,4 +2180,3 @@ pipe = pipeline("text-generation", model=model, tokenizer=tokenizer)
 
 engine = TransformersEngine(pipe)
 engine([{"role": "user", "content": "Ok!"}], stop_sequences=["great"])
-
